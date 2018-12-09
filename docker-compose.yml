@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+
+  drillphish:
+    build: .
+    container_name: 'drillphish'
+    hostname: 'drillphishhost'
+    environment:
+      DRILLPHISH_ACCOUNT_ID: ''
+      DRILLPHISH_USERNAME_FIELD_SELECTOR: '#username'
+      DRILLPHISH_PASSWORD_FIELD_SELECTOR: "input[type='password']"
+      DRILLPHISH_FORM_SELECTOR: '#login'
+      DRILLPHISH_WEBHOOK_URI: ''
+      DRILLPHISH_REDIRECT_URI: 'https://gotcha.drillphish.com'
+      DRILLPHISH_DAYS_BETWEEN_REARMING_PAGE: '1'
+      DRILLPHISH_DAYS_OF_VICTIM_ID_PERSISTENCE: '365'
+    ports:
+      - '9000:8080'
+      # - '4443:443'
+    volumes:
+      Uncomment this for MacOS or Linux
+      - "$PWD/source/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "$PWD/test/phishbook.html:/usr/share/nginx/html/index.html:ro"
+      # Uncomment this for Windows
+      # - "./source/nginx.conf:/etc/nginx/nginx.conf:ro"
+      # - "./test/phishbook.html:/usr/share/nginx/html/index.html:ro"

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>DrillPhish Test Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/drillphish.min.js"></script>
+    <style>
+        body {
+            background-color: #4267b2;
+            color: white;
+            font-weight: bold;
+            font-family: Arial;
+        }
+        .loginfield {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>phishbook</h1>
+    <form id="login" method="POST" action="/phishing/site/api">
+        <div id="usernamediv" class="loginfield">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" />
+        </div>
+        <div id="passworddiv" class="loginfield">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" />
+        </div>
+        <input type="submit" value="Login">
+    </form>
+    <div style="margin-top: 20px; width: 300px;">
+        <small>
+            Check your web browser's console to see messages logged by DrillPhish.
+        </small>
+        <small>
+            You can also see the requests sent to the webhook (if applicable)
+            in the Network tab of your web browser's developer tools.
+        </small>
+    </div>
+</body>
+</html>
