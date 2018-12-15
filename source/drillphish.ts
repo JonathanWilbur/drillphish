@@ -138,7 +138,7 @@ function getDrillPhishGotchaDate () : Date | null {
     return parseISOString(storedGotchaDate);
 }
 
-function getUsernameElement () : HTMLElement | null {
+function getUsernameElement () : HTMLInputElement | null {
     if (DRILLPHISH_USERNAME_FIELD_SELECTOR === "") {
         console.warn("No username selector set for DrillPhish. The username field will not be policed for input.");
         return null;
@@ -146,7 +146,7 @@ function getUsernameElement () : HTMLElement | null {
     return document.querySelector(DRILLPHISH_USERNAME_FIELD_SELECTOR);
 }
 
-function getPasswordElement () : HTMLElement | null {
+function getPasswordElement () : HTMLInputElement | null {
     if (DRILLPHISH_PASSWORD_FIELD_SELECTOR === "") {
         console.warn("No password selector set for DrillPhish. The password field will not be policed for input.");
         return null;
@@ -167,8 +167,16 @@ function report (event : DrillPhishEvent, requestData : any) : void {
     // Event data
     requestData["victimID"] = DRILLPHISH_VICTIM_ID;
     requestData["event"] = event;
-    requestData["href"] = window.location.href;
     requestData["timestamp"] = (new Date()).toISOString();
+
+    // Connection information
+    requestData["protocol"] = window.location.protocol;
+    requestData["hostname"] = window.location.hostname;
+    requestData["port"] = window.location.port;
+    requestData["pathname"] = window.location.pathname;
+    requestData["search"] = window.location.search;
+    requestData["hash"] = window.location.hash;
+    requestData["href"] = window.location.href;
 
     // DrillPhish configuration
     requestData["DRILLPHISH_ACCOUNT_ID"] = DRILLPHISH_ACCOUNT_ID;
@@ -219,7 +227,12 @@ function gotcha () : void {
     console.info("Victim fell for the DrillPhish phishing drill.");
     setPersistentItem("DRILLPHISH_GOTCHA_TIME", (new Date()).toISOString(), DRILLPHISH_DAYS_BETWEEN_REARMING_PAGE);
     if (DRILLPHISH_REDIRECT_URI !== "") {
-        window.location.href = DRILLPHISH_REDIRECT_URI;
+        if (DRILLPHISH_TESTING) {
+            if (confirm("Click 'OK' to be redirected to the DRILLPHISH_REDIRECT_URI. Click 'Cancel' to stay on this page."))
+                window.location.href = DRILLPHISH_REDIRECT_URI;
+        } else {
+            window.location.href = DRILLPHISH_REDIRECT_URI;
+        }
     } else {
         console.warn("DrillPhish is not configured to redirect. User will stay on current page and see an alert instead.");
         const MONITORING_MESSAGE : string = (() : string => {
@@ -324,29 +337,47 @@ window.onload = () : void => {
     } else if (DRILLPHISH_FORM_SELECTOR !== "")
         console.warn("Failed to find an element watched by DrillPhish. Phishing drill may fail.");
 
-    const usernameElement : HTMLElement | null = getUsernameElement();
-    const passwordElement : HTMLElement | null = getPasswordElement();
+    const usernameElement : HTMLInputElement | null = getUsernameElement();
+    const passwordElement : HTMLInputElement | null = getPasswordElement();
     console.assert(!(!formElement && !usernameElement && !passwordElement),
         "Selectors given to DrillPhish found no elements to watch. DrillPhish exiting.");
-    [ usernameElement, passwordElement ].forEach((element : HTMLElement | null, index : number) : void => {
-        if (element) {
-            element.addEventListener("input", (event : Event) : void => {
-                report(DrillPhishEvent.DATA_ENTERED, {
-                    eventTarget: (() : string => {
-                        if (event.srcElement) return event.srcElement.outerHTML;
-                        return "";
-                    })(),
-                    selectionTarget: element.outerHTML
-                });
-                disableAllInputElements();
-                clearAllForms();
-                gotcha();
+
+    if (usernameElement) {
+        usernameElement.addEventListener("blur", (event : Event) : void => {
+            report(DrillPhishEvent.DATA_ENTERED, {
+                eventTarget: (() : string => {
+                    if (event.srcElement) return event.srcElement.outerHTML;
+                    return "";
+                })(),
+                selectionTarget: usernameElement.outerHTML,
+                username: (() : string => usernameElement.value)()
             });
-            console.debug("DrillPhish is watching a username or password field for input events.");
-        } else if (
-            (index === 0 && DRILLPHISH_USERNAME_FIELD_SELECTOR !== "") ||
-            (index === 1 && DRILLPHISH_PASSWORD_FIELD_SELECTOR !== "")
-        )
-            console.warn("Failed to find an element watched by DrillPhish. Phishing drill may fail.");
-    });
+        });
+        console.debug("DrillPhish is watching the username field for input events.");
+    } else if (DRILLPHISH_USERNAME_FIELD_SELECTOR !== "") {
+        console.warn(`Failed to find the username element watched by DrillPhish, given the selector "${DRILLPHISH_USERNAME_FIELD_SELECTOR}". Phishing drill may fail.`);
+    }
+
+    if (passwordElement) {
+        passwordElement.addEventListener("input", (event : Event) : void => {
+            report(DrillPhishEvent.DATA_ENTERED, {
+                eventTarget: (() : string => {
+                    if (event.srcElement) return event.srcElement.outerHTML;
+                    return "";
+                })(),
+                selectionTarget: passwordElement.outerHTML,
+                username: (() : string => {
+                    if (usernameElement)
+                        return usernameElement.value;
+                    return "";
+                })()
+            });
+            disableAllInputElements();
+            clearAllForms();
+            gotcha();
+        });
+        console.debug("DrillPhish is watching the password field for input events.");
+    } else if (DRILLPHISH_PASSWORD_FIELD_SELECTOR !== "") {
+        console.warn(`Failed to find the password element watched by DrillPhish, given the selector "${DRILLPHISH_PASSWORD_FIELD_SELECTOR}". Phishing drill may fail.`);
+    }
 };

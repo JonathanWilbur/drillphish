@@ -76,7 +76,7 @@ To build `./dist/drillphish.min.js`, run `webpack`.
 ## ToDo
 
 - [ ] Support OAuth 2.0 authentication for webhooks
-- [ ] ~~Implement WebAssembly Build~~ _I cannot figure out how to get console symbols to work and other problems.~~
+- [ ] ~~Implement WebAssembly Build~~ _I cannot figure out how to get console symbols to work and other problems._
 - [ ] Create usage GIF
 - [ ] Create AWS API Gateway + Lambda Webhook Example
 - [ ] Create Azure Example

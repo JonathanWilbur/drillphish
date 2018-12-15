@@ -16,10 +16,10 @@ services:
       DRILLPHISH_DAYS_BETWEEN_REARMING_PAGE: '1'
       DRILLPHISH_DAYS_OF_VICTIM_ID_PERSISTENCE: '365'
     ports:
-      - '9000:8080'
-      # - '4443:443'
+      - '9000:8080/tcp'
+      # - '4443:443/tcp'
     volumes:
-      Uncomment this for MacOS or Linux
+      # Uncomment this for MacOS or Linux
       - "$PWD/source/nginx.conf:/etc/nginx/nginx.conf:ro"
       - "$PWD/test/phishbook.html:/usr/share/nginx/html/index.html:ro"
       # Uncomment this for Windows
