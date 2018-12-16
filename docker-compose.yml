@@ -6,15 +6,8 @@ services:
     build: .
     container_name: 'drillphish'
     hostname: 'drillphishhost'
-    environment:
-      DRILLPHISH_ACCOUNT_ID: ''
-      DRILLPHISH_USERNAME_FIELD_SELECTOR: '#username'
-      DRILLPHISH_PASSWORD_FIELD_SELECTOR: "input[type='password']"
-      DRILLPHISH_FORM_SELECTOR: '#login'
-      DRILLPHISH_WEBHOOK_URI: ''
-      DRILLPHISH_REDIRECT_URI: 'https://gotcha.drillphish.com'
-      DRILLPHISH_DAYS_BETWEEN_REARMING_PAGE: '1'
-      DRILLPHISH_DAYS_OF_VICTIM_ID_PERSISTENCE: '365'
+    env_file:
+      - '.env'
     ports:
       - '9000:8080/tcp'
       # - '4443:443/tcp'

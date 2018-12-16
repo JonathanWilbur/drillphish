@@ -15,7 +15,7 @@ const DRILLPHISH_WEBHOOK_URI = "__DRILLPHISH_WEBHOOK_URI__";
 const DRILLPHISH_REDIRECT_URI = "__DRILLPHISH_REDIRECT_URI__";
 const DRILLPHISH_DAYS_BETWEEN_REARMING_PAGE = tryParsingIntSetting("__DRILLPHISH_DAYS_BETWEEN_REARMING_PAGE__", 1);
 const DRILLPHISH_DAYS_OF_VICTIM_ID_PERSISTENCE = tryParsingIntSetting("__DRILLPHISH_DAYS_OF_VICTIM_ID_PERSISTENCE__", 365);
-const DRILLPHISH_TESTING = false;
+const DRILLPHISH_TESTING = (new Boolean(tryParsingIntSetting("__DRILLPHISH_TESTING__", 0))).valueOf();
 const MILLISECONDS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
@@ -233,7 +233,7 @@ window.onload = () => {
         console.debug("DrillPhish is watching the form element for submission events.");
     }
     else if (DRILLPHISH_FORM_SELECTOR !== "")
-        console.warn("Failed to find an element watched by DrillPhish. Phishing drill may fail.");
+        console.warn(`Failed to find the form element watched by DrillPhish, given the selector '${DRILLPHISH_FORM_SELECTOR}'. Phishing drill may fail.`);
     const usernameElement = getUsernameElement();
     const passwordElement = getPasswordElement();
     console.assert(!(!formElement && !usernameElement && !passwordElement), "Selectors given to DrillPhish found no elements to watch. DrillPhish exiting.");

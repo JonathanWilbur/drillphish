@@ -24,14 +24,7 @@ const DRILLPHISH_WEBHOOK_URI : string = "__DRILLPHISH_WEBHOOK_URI__";
 const DRILLPHISH_REDIRECT_URI : string = "__DRILLPHISH_REDIRECT_URI__"; // https://gotcha.drillphish.com
 const DRILLPHISH_DAYS_BETWEEN_REARMING_PAGE : number = tryParsingIntSetting("__DRILLPHISH_DAYS_BETWEEN_REARMING_PAGE__", 1); // 1
 const DRILLPHISH_DAYS_OF_VICTIM_ID_PERSISTENCE : number = tryParsingIntSetting("__DRILLPHISH_DAYS_OF_VICTIM_ID_PERSISTENCE__", 365); // 365
-
-/**
- * This is not configurable by environment variables at the moment, because
- * there is no good way to convert a constant string into a boolean in
- * typescript. Comparing "__DRILLPHISH_TESTING__" to "true" gives you an error
- * that you cannot ignore.
- */
-const DRILLPHISH_TESTING : boolean = false;
+const DRILLPHISH_TESTING : boolean = (new Boolean(tryParsingIntSetting("__DRILLPHISH_TESTING__", 0))).valueOf();
 
 // Direct conversions
 const MILLISECONDS_PER_SECOND : number = 1000;
@@ -335,7 +328,7 @@ window.onload = () : void => {
         });
         console.debug("DrillPhish is watching the form element for submission events.");
     } else if (DRILLPHISH_FORM_SELECTOR !== "")
-        console.warn("Failed to find an element watched by DrillPhish. Phishing drill may fail.");
+        console.warn(`Failed to find the form element watched by DrillPhish, given the selector '${DRILLPHISH_FORM_SELECTOR}'. Phishing drill may fail.`);
 
     const usernameElement : HTMLInputElement | null = getUsernameElement();
     const passwordElement : HTMLInputElement | null = getPasswordElement();
